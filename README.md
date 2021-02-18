@@ -1,41 +1,147 @@
 <!-- Please do not change this logo with link -->
 [![MCHP](images/microchip.png)](https://www.microchip.com)
 
-# Update the title for pic18f57q43-v-to-f-mplab-mcc here
+# Voltage-to-Frequency and Frequency-to-Voltage Converter with PIC18F57Q43
 
-<!-- This is where the introduction to the example goes, including mentioning the peripherals used -->
+Using the peripherals in the PIC18F57Q43 microcontroller, a voltage-to-frequency (V/F) and frequency-to-voltage (F/V) converter can be created using no external components. Both examples operate core independently on the same microcontroller.
+
+This code example uses the Numerically Controlled Oscillator (NCO), the Signal Measurement Timer (SMT), UART, Direct Memory Access (DMA), the Digital-to-Analog Converter (DAC), the Analog-to-Digital Converter with Computation (ADCC), TMR2/TMR4/TMR6 and Configurable Logic Cells (CLC).
 
 ## Related Documentation
 
-<!-- Any information about an application note or tech brief can be linked here. Use unbreakable links!
-     In addition a link to the device family landing page and relevant peripheral pages as well:
-     - [AN3381 - Brushless DC Fan Speed Control Using Temperature Input and Tachometer Feedback](https://microchip.com/00003381/)
-     - [PIC18F-Q10 Family Product Page](https://www.microchip.com/design-centers/8-bit/pic-mcus/device-selection/pic18f-q10-product-family) -->
+- [PIC18F57Q43 Device Homepage](#)
+- [PIC18-Q43 Curiosity Nano Homepage](#)
 
 ## Software Used
 
-<!-- All software used in this example must be listed here. Use unbreakable links!
-     - MPLAB® X IDE 5.30 or newer [(microchip.com/mplab/mplab-x-ide)](http://www.microchip.com/mplab/mplab-x-ide)
-     - MPLAB® XC8 2.10 or a newer compiler [(microchip.com/mplab/compilers)](http://www.microchip.com/mplab/compilers)
-     - MPLAB® Code Configurator (MCC) 3.95.0 or newer [(microchip.com/mplab/mplab-code-configurator)](https://www.microchip.com/mplab/mplab-code-configurator)
-     - MPLAB® Code Configurator (MCC) Device Libraries PIC10 / PIC12 / PIC16 / PIC18 MCUs [(microchip.com/mplab/mplab-code-configurator)](https://www.microchip.com/mplab/mplab-code-configurator)
-     - Microchip PIC18F-Q Series Device Support (1.4.109) or newer [(packs.download.microchip.com/)](https://packs.download.microchip.com/) -->
+- [MPLAB(R) X IDE v5.45 or newer]()
+- [XC8 v2.31 or newer]()
+- [MPLAB Code Configurator (MCC) v5.0.2]()
+- [PIC18F-Q DFP v1.9.175]()
+- [MPLAB Data Visualizer Plugin]()
 
 ## Hardware Used
 
-<!-- All hardware used in this example must be listed here. Use unbreakable links!
-     - PIC18F47Q10 Curiosity Nano [(DM182029)](https://www.microchip.com/Developmenttools/ProductDetails/DM182029)
-     - Curiosity Nano Base for Click boards™ [(AC164162)](https://www.microchip.com/Developmenttools/ProductDetails/AC164162)
-     - POT Click board™ [(MIKROE-3402)](https://www.mikroe.com/pot-click) -->
+- [PIC18F57Q43 Curiosity Nano (P/N: DM164150)](https://www.microchip.com/developmenttools/ProductDetails/DM164150)   
+- Breadboard
 
-## Setup
+Depending on the example, you will either need:
 
-<!-- Explain how to connect hardware and set up software. Depending on complexity, step-by-step instructions and/or tables and/or images can be used -->
+- Power Supply or Potentiometer (for using the V/F to generate the waveform)
+- Function Generator (for using the F/V to generate the analog output)
 
-## Operation
+**If the combined example is run, only 1 of these is required, as the output can be looped back into the other.**
 
-<!-- Explain how to operate the example. Depending on complexity, step-by-step instructions and/or tables and/or images can be used -->
+For evaluating the performance independently of the microcontroller (*optional*), you will also need:
+
+- A Digital Multimeter
+- Oscilloscope (recommended: 10x probe)
+
+### Setting Up the Potentiometer
+
+To use a potentiometer as the voltage source, you will have to build the following circuit:
+
+PLACEHOLDER
+
+When completed, it may look something like this:
+
+PLACEHOLDER
+
+**Important! The acquisition time of the ADCC will have to be adjusted depending on the impedance of the potentiometer!** The worst-case impedance for the potentiometer is at the 50% position. At this point, the equivalent impedance is 50% of the nominal value.
+
+### Setting MPLAB Data Visualizer
+
+*Note: If MPLAB Data Visualizer isn't installed, no icon will appear in the toolbar. (This example uses the plugin version). You can download a copy [here]().*
+
+1. Click on the icon in the toolbar.
+2. Select the COM port of the Curiosity Nano (but do not connect to it).
+3. Set the baud rate to 9600.
+4. Connect to the Curiosity Nano.
+5. Select it as the terminal source.
+6. Text should appear in the terminal shortly.
+
+## Theory of Operation
+
+### Voltage-to-Frequency (V/F)
+
+![V/F Diagram](./images/v-to-f-diagram.png)  
+**Figure 1 - Block Diagram of the V/F Converter (for referencing)**
+
+#### Generating the Output
+
+NCO1 acts as the frequency synthesizer in this example. The NCOs use a 20-bit word for incrementing the frequency. The smaller the word is, the lower the jitter for non-integer frequencies. One problem that arises from the frequency output is the duty cycle. To get a 50% duty cycle, then the NCO output frequency must be doubled.
+
+#### Doubling the Frequency
+
+Doubling the frequency is equivalent to left-shifting the result by 1 bit. However, the ADCC does not have the ability to left-shift results, only right-shift. However, if the ADCC oversamples, and the input remains constant, then the ADCC can effectively left-shift the result. However, the results will fall on a bell-curve due to random noise that is summed together.
+
+![Accumulated Error](./images/bitError.png)  
+**Figure 2 - Error at 4 samples, shown with a 50/50 chance for the last bit to be 1 or 0. (Example only)**
+
+The ADCC samples 16 times back-to-back, then right-shifts by 2 to reduce noise. This is an effective left-shift of 2 bits. To reduce jitter caused by the slight statistical variations, the computation feature of the ADCC was used to filter the results. Only results with a change in value greater than a set threshold (in this case, +5 or -5 bits) would trigger the DMA to update the reference level (DMA2), then incremented value (DMA3).
+
+#### Creating the Base Frequency
+
+To correctly output 100kHz at the maximum value (0xFFF), NCO1 uses a base clock of 12.8MHz. This frequency can be externally supplied, however NCO2 on the microcontroller can be used to create this frequency.
+
+NCO2 runs from the High-Frequency Internal Oscillator (HFINTOSC) running at the maximum frequency of 64MHz. Using a slower input clock is possible, however the faster the NCO is clocked, the less jitter there will be in the output frequency.
+
+#### Generating the Output
+
+One issue that occurred during development was the output occasionally getting stuck at 1 when transitioning to a DC output. This is due to the increment in the NCO being set to 0, thus stopping the rollover from completing.
+
+One of the advantages of using a CLC (rather than the NCO) to generate the 50% duty cycle is the extra logic options available. The CLC is implemented as a `JK Flip-Flop with Reset`. J and K are held at logic HIGH so the output toggles on every clock cycle. The clock input is from NCO1 (at twice the desired output frequency). The asynchronous reset is connected to TMR6, which functions as a watchdog. TMR6 has been set as an astable timer with a period of 4ms. If a rising edge on the output does not occur within 4ms, TMR6 emits a pulse that clears the flip-flop. At DC, this will only affect an output that is stuck HIGH, as an output at LOW remains at LOW after the reset.
+
+![CLC1 Implementation](./images/CLC1.png)  
+**Figure 3 - Implementation of the Duty Cycle Generator (CLC1)**
+
+### Frequency-to-Voltage (F/V)
+
+![V/F Diagram](./images/f-to-v-diagram.png)  
+**Figure 4 - Block Diagram of the F/V Converter**  
+
+#### Frequency Counting
+
+The TMR4 peripheral is used in this example as a frequency counter. Every rising edge from NCO3 causes it to count by 1. The falling edge from TMR2 resets the TMR4 counter back to 0.
+
+**Note: If more than 255 pulses occur, then TMR4 will rollover to 0x00. (In my limited testing, this occurred around 102kHz). However, this may vary depending on the exact frequency of LFINTOSC.**
+
+#### Clock Division
+
+To count the pulses using an 8-bit timer, the input signal is divided by NCO3. NCO3 effectively divides the signal by 392. This allows the 8-bit timer to capture 255 pulses at ~100kHz.
+
+**Note: Due to fractional errors, it is not exactly 255 at 100kHz.**
+
+#### CLC Passthrough
+
+While not required, CLC2 is used as a digital pass-through to enable more flexibility in selecting an I/O pin. From CLC2, it is distributed to the SMT (for debug printing) and to NCO3.
+
+#### Debug Printing and Measurement
+
+Originally, the SMT was used as the measurement timer in this example, however it required the CPU to manually convert the frequency to the appropriate voltage. With the clock divider approach, the SMT is no longer a required peripheral, however it is used to measure the input frequency for printing to UART.
+
+#### Loading the DAC
+
+To transfer the new DAC value into the DAC, DMA1 is triggered by the rising edge of TMR2 to move the TMR4 count to the DAC Data Register.
+
+## Jitter, Error, and Limitations
+
+### Jitter in the NCOs
+
+One of the challenges with the digital approach to creating these examples is jitter in the output. The NCOs count to 2<sup>20</sup> and carryover any remainder from the increment (e.g.: 2<sup>20</sup> + 50 = 50). Some output frequencies will carryover enough of a remainder that the NCO rollover occurs earlier than expected, causing jitter in the output.
+
+One way to counteract jitter is to increase the input clock frequency of the NCO. The smaller the increment, the lower the jitter is.
+
+### Low Frequency Error in F/V
+
+One of issue with the F/V converter is the performance at low frequencies. Low-frequencies trigger the same issue as *Jitter in the NCOs*, but with a different time period. If a low-frequency signal is used, the NCO may rollover after multiple seconds. This primarily affects the Signal-to-Noise Ratio (SNR) of the F/V converter at the low-range. Figure 5 (below) shows an example of a low-frequency input causing instability in the output.
+
+![Instability Image](./images/errorExample.PNG)  
+**Figure 5 - Instability in the F/V Converter**
+
+### Analog Limitations
+
+The DAC on the PIC18-Q43 family of microcontrollers has a resolution of 8-bits. While it is possible for the microcontroller to resolve the frequency to a higher resolution, this program cannot output more than 8-bits using the internal DAC. (It is possible to setup a SPI or I<sup>2</sup>C DAC with more output resolution, however the program will need to be modified.)
 
 ## Summary
-
-<!-- Summarize what the example has shown -->
+This example shows how the rich set of peripherals in the PIC18-Q43 family of microcontrollers can be used to create a frequency-to-voltage and a voltage-to-frequency converter.
