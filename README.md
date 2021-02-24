@@ -9,20 +9,19 @@ This code example uses the Numerically Controlled Oscillator (NCO), the Signal M
 
 ## Related Documentation
 
-- [PIC18F57Q43 Device Homepage](#)
-- [PIC18-Q43 Curiosity Nano Homepage](#)
+- [PIC18F57Q43 Device Homepage](https://www.microchip.com/wwwproducts/en/PIC18F57Q43?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_MMTCha_PIC18FQ43&utm_content=pic18q43_v_to_f_github)
 
 ## Software Used
 
-- [MPLAB(R) X IDE v5.45 or newer]()
-- [XC8 v2.31 or newer]()
-- [MPLAB Code Configurator (MCC) v5.0.2]()
-- [PIC18F-Q DFP v1.9.175]()
-- [MPLAB Data Visualizer Plugin]()
+- [MPLAB(R) X IDE v5.45 or newer](https://www.microchip.com/en-us/development-tools-tools-and-software/mplab-x-ide?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_MMTCha_PIC18FQ43&utm_content=pic18q43_v_to_f_github)
+- [XC8 v2.31 or newer](https://www.microchip.com/en-us/development-tools-tools-and-software/mplab-xc-compilers?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_MMTCha_PIC18FQ43&utm_content=pic18q43_v_to_f_github)
+- [MPLAB Code Configurator (MCC) v5.0.2](https://www.microchip.com/mplab/mplab-code-configurator?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_MMTCha_PIC18FQ43&utm_content=pic18q43_v_to_f_github)
+- [PIC18F-Q DFP v1.9.175](https://packs.download.microchip.com/)
+- [MPLAB Data Visualizer Plugin](https://www.microchip.com/en-us/development-tools-tools-and-software/embedded-software-center/mplab-data-visualizer?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_MMTCha_PIC18FQ43&utm_content=pic18q43_v_to_f_github)
 
 ## Hardware Used
 
-- [PIC18F57Q43 Curiosity Nano (P/N: DM164150)](https://www.microchip.com/developmenttools/ProductDetails/DM164150)   
+- [PIC18F57Q43 Curiosity Nano (P/N: DM164150)](https://www.microchip.com/developmenttools/ProductDetails/DM164150?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_MMTCha_PIC18FQ43&utm_content=pic18q43_v_to_f_github)   
 - Breadboard
 
 Depending on the example, you will either need:
@@ -37,17 +36,30 @@ For evaluating the performance independently of the microcontroller (*optional*)
 - A Digital Multimeter
 - Oscilloscope (recommended: 10x probe)
 
+| Pin | Function          | Component            |
+| --- | ----------------- | -------------------- |
+| RA0 | Analog Input      | Voltage to Frequency |
+| RA7 | Frequency Output  | Voltage to Frequency |
+| RA5 | Frequency Input   | Frequency to Voltage |
+| RA2 | Analog Output     | Frequency to Voltage |
+| RF0 | UART TX           | Both                 |
+| RF1 | UART RX           | Both                 |  
+| RF3 | LED0              | Both                 |  
+
+**Table 1 - Pin Assignments**
+
 ### Setting Up the Potentiometer
 
 To use a potentiometer as the voltage source, you will have to build the following circuit:
 
-PLACEHOLDER
+![Circuit Diagram](./images/potentiometerCircuit.png)  
+**Figure 1 - Potentiometer Connection Diagram**
 
 When completed, it may look something like this:
 
 PLACEHOLDER
 
-**Important! The acquisition time of the ADCC will have to be adjusted depending on the impedance of the potentiometer!** The worst-case impedance for the potentiometer is at the 50% position. At this point, the equivalent impedance is 50% of the nominal value.
+**Important! The acquisition time of the ADCC has to be adjusted depending on the impedance of the potentiometer!** The worst-case equivalent impedance for the potentiometer is at the 50% position. At this point, the equivalent impedance (of the circuit) is 50% of the potentiometer value.
 
 ### Setting MPLAB Data Visualizer
 
@@ -58,7 +70,7 @@ PLACEHOLDER
 3. Set the baud rate to 9600.
 4. Connect to the Curiosity Nano.
 5. Select it as the terminal source.
-6. Text should appear in the terminal shortly.
+6. Text should start appearing in the terminal shortly.
 
 ## Theory of Operation
 
@@ -134,7 +146,7 @@ One way to counteract jitter is to increase the input clock frequency of the NCO
 
 ### Low Frequency Error in F/V
 
-One of issue with the F/V converter is the performance at low frequencies. Low-frequencies trigger the same issue as *Jitter in the NCOs*, but with a different time period. If a low-frequency signal is used, the NCO may rollover after multiple seconds. This primarily affects the Signal-to-Noise Ratio (SNR) of the F/V converter at the low-range. Figure 5 (below) shows an example of a low-frequency input causing instability in the output.
+One of issue with the F/V converter is the performance at low frequencies. Low-frequencies trigger the same issue as *Jitter in the NCOs*, but with a different time period. If a low-frequency signal is used, the NCO may rollover after multiple seconds. This primarily affects the resolution of the F/V converter at lower-frequencies. Figure 5 (below) shows an example of a low-frequency input causing instability in the output.
 
 ![Instability Image](./images/errorExample.PNG)  
 **Figure 5 - Instability in the F/V Converter**
