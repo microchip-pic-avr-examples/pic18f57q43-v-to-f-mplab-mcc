@@ -4,27 +4,27 @@
     "content": {
         "metaDataVersion": "1.1.0",
         "name": "com.microchip.mcu8.mplabx.project.pic18f57q43-v-to-f-mplab-mcc",
-        "version": "",
-        "displayName": "",
+        "version": "1.0.0",
+        "displayName": "V/F and F/V Converter with PIC18F57Q43",
         "projectName": "pic18f57q43-v-to-f-mplab-mcc",
-        "shortDescription": "",
+        "shortDescription": "Convert V/F and F/V using the peripherals in PIC18F57Q43",
         "ide": {
             "name": "MPLAB X",
-            "semverRange": ""
+            "semverRange": ">=5.45.0"
         },
         "compiler": [
 			{
 				"name": "XC8",
-				"semverRange": ""
+				"semverRange": "^2.31.0"
 			}
 		],
         "dfp": {
-            "name": "",
-            "semverRange": ""
+            "name": "PIC18F-Q_DFP",
+            "semverRange": "^1.9.175"
         },
         "configurator": {
-            "name": "",
-            "semverRange": ""
+            "name": "MCC",
+            "semverRange": ">=5.0.2"
         },
         "device": {
             "metaDataVersion": "1.0.0",
@@ -32,16 +32,62 @@
             "content": {
                 "metaDataVersion": "1.0.0",
                 "category": "com.microchip.device",
-                "name": "",
+                "name": "PIC18F57Q43",
                 "versionRange": "*"
             }
         },
-        "author": "",
+        "author": "Microchip",
         "subcategories": [
+          "MCC",
+          [
+              "Peripherals",
+              "CLC"
+          ],
+          [
+              "Peripherals",
+              "NCO"
+          ],
+          [
+              "Peripherals",
+              "TMR"
+          ],
+          [
+              "Peripherals",
+              "SMT"
+          ],
+          [
+              "Peripherals",
+              "ADCC"
+          ],
+          [
+              "Peripherals",
+              "DAC"
+          ],
+          [
+              "Peripherals",
+              "DMA"
+          ],
+          [
+              "Peripherals",
+              "UART"
+          ]
         ],
         "peripherals": [
+          "CLC",
+          "NCO",
+          "TMR",
+          "SMT",
+          "ADCC",
+          "DAC",
+          "DMA",
+          "UART"
         ],
         "keywords": [
+          "Curiosity Nano",
+          "V/F and F/V Converters",
+          "CLC",
+          "DAC",
+          "DMA"
         ],
 		"additionalData": {
 			"longDescription": {
