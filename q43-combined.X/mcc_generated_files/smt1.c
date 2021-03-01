@@ -85,6 +85,9 @@ void SMT1_Initialize(void)
     // SMT1PR 255; 
     SMT1PRL = 0xFF;
 
+    // Start the SMT module by writing to SMTxGO bit
+    SMT1CON1bits.SMT1GO = 1;
+    
 }
         
 void SMT1_DataAcquisitionEnable(void)

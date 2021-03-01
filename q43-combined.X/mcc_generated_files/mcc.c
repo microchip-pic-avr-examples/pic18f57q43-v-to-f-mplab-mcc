@@ -63,8 +63,8 @@ void SYSTEM_Initialize(void)
     SMT1_Initialize();
     TMR2_Initialize();
     TMR6_Initialize();
-    CLC1_Initialize();
     NCO2_Initialize();
+    CLC1_Initialize();
     DMA3_Initialize();
     DAC1_Initialize();
     UART1_Initialize();
@@ -73,8 +73,8 @@ void SYSTEM_Initialize(void)
 
 void OSCILLATOR_Initialize(void)
 {
-    // NOSC HFINTOSC; NDIV 32; 
-    OSCCON1 = 0x65;
+    // NOSC HFINTOSC; NDIV 4; 
+    OSCCON1 = 0x62;
     // CSWHOLD may proceed; SOSCPWR Low power; 
     OSCCON3 = 0x00;
     // MFOEN disabled; LFOEN disabled; ADOEN disabled; SOSCEN disabled; EXTOEN disabled; HFOEN disabled; 

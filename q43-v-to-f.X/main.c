@@ -43,21 +43,37 @@
 
 #include "mcc_generated_files/mcc.h"
 
+volatile bool sendDataVtoF = false;
+
+void __OnADCCThreshold(void)
+{
+    sendDataVtoF = true;
+}
+
+
 void main(void)
 {
     // Initialize the device
     SYSTEM_Initialize();
+    sendDataVtoF = false;
     
     //Set DMA Priorities  
     DMA2_SetDMAPriority(0);
     DMA3_SetDMAPriority(1);
+    
+    //Set ISR for NCO updates
+    ADCC_SetADTIInterruptHandler(&__OnADCCThreshold);
     
     // Enable the Global Interrupts
     INTERRUPT_GlobalInterruptEnable();
 
     while (1)
     {
-        // Add your application code
+        if (sendDataVtoF)
+        {
+            sendDataVtoF = false;
+            printf("New NCO Increment: 0x%x\n\r", ADCC_GetFilterValue());
+        }
     }
 }
 /**

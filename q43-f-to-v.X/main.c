@@ -43,14 +43,15 @@
 
 #include "mcc_generated_files/mcc.h"
 
-volatile bool sendData = false;
+volatile static bool sendDataFtoV = false;
 
 void __OnTMR2Overflow(void)
 {
-    sendData = true;
+    sendDataFtoV = true;
 }
 
 //Using Fixed Point Numbers, set the DAC's output from SMT1's value
+//Not currently used in the example, but it showcases another way.
 void setDACFromFrequencyFixedPoint(void)
 {
     //Frequency Range: 100kHz to DC
@@ -113,36 +114,35 @@ void main(void)
     DMA1_SetDMAPriority(0);
     
     //Clear "Send Data" Flag
-    sendData = false;
+    sendDataFtoV = false;
     
+    //TMR2 Interrupt for Freq. Measurements
     TMR2_SetInterruptHandler(&__OnTMR2Overflow);
-    
+        
     // Enable the Global Interrupts
     INTERRUPT_GlobalInterruptEnable();
     
     //Start the SMT
     SMT1_DataAcquisitionEnable();
-    
+        
     while (1)
-    {
-        uint16_t high, low;
-
-        if (sendData)
+    {        
+        if (sendDataFtoV)
         {
-            sendData = false;
+            sendDataFtoV = false;
             //setDACFromFrequencyFixedPoint();
                         
             if (SMT1_GetCapturedPeriod() > UINT16_MAX)
             {
                 //Exceeds the size that printf can handle - show in kHz instead.
                 uint8_t freq = fastDivision24(SMT1_GetCapturedPeriod(), 1000);
-                printf("Input Frequency: %ukHz\n\r", freq);
+                printf("Measured Input Frequency: %ukHz\n\r", freq);
             }
             else
             {
-                printf("Input Frequency: %uHz\n\r", SMT1_GetCapturedPeriod());
+                printf("Measured Input Frequency: %uHz\n\r", SMT1_GetCapturedPeriod());
             }            
-        }        
+        }   
     }
 }
 /**

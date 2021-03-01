@@ -61,13 +61,14 @@ void SYSTEM_Initialize(void)
     ADCC_Initialize();
     NCO1_Initialize();
     TMR2_Initialize();
+    UART1_Initialize();
     SystemArbiter_Initialize();
 }
 
 void OSCILLATOR_Initialize(void)
 {
-    // NOSC HFINTOSC; NDIV 32; 
-    OSCCON1 = 0x65;
+    // NOSC HFINTOSC; NDIV 4; 
+    OSCCON1 = 0x62;
     // CSWHOLD may proceed; SOSCPWR Low power; 
     OSCCON3 = 0x00;
     // MFOEN disabled; LFOEN disabled; ADOEN disabled; SOSCEN disabled; EXTOEN disabled; HFOEN disabled; 

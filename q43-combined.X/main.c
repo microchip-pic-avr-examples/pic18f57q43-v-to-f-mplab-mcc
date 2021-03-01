@@ -43,6 +43,33 @@
 
 #include "mcc_generated_files/mcc.h"
 
+volatile static bool sendDataFtoV = false;
+volatile static bool sendDataVtoF = false;
+
+void __OnTMR2Overflow(void)
+{
+    sendDataFtoV = true;
+}
+
+void __OnADCCThreshold(void)
+{
+    sendDataVtoF = true;
+}
+
+//Fast division of a 24-bit number by a 16-bit number, with no remainder returned.
+uint8_t fastDivision24(uint24_t dividend, uint16_t divisor)
+{
+    uint8_t counter = 0;
+    
+    while (dividend >= divisor)
+    {
+        dividend -= divisor;
+        counter++;
+    }
+    
+    return counter;
+}
+
 void main(void)
 {
     // Initialize the device
@@ -53,12 +80,45 @@ void main(void)
     DMA2_SetDMAPriority(1); //ADC Setpoint Transfer
     DMA3_SetDMAPriority(2); //NCO Increment Transfer
     
+    //Clear "Send Data" Flags
+    sendDataFtoV = false;
+    sendDataVtoF = false;
+    
+    //Set ISR for NCO updates
+    ADCC_SetADTIInterruptHandler(&__OnADCCThreshold);
+
+    //TMR2 Interrupt for Freq. Measurements
+    TMR2_SetInterruptHandler(&__OnTMR2Overflow);
+
+    
     // Enable the Global Interrupts
     INTERRUPT_GlobalInterruptEnable();
 
     while (1)
     {
-        // Add your application code
+        //Measured Input Frequency ISR
+        if (sendDataFtoV)
+        {
+            sendDataFtoV = false;
+            
+            if (SMT1_GetCapturedPeriod() > UINT16_MAX)
+            {
+                //Exceeds the size that printf can handle - show in kHz instead.
+                uint8_t freq = fastDivision24(SMT1_GetCapturedPeriod(), 1000);
+                printf("Measured Input Frequency: %ukHz\n\r", freq);
+            }
+            else
+            {
+                printf("Measured Input Frequency: %uHz\n\r", SMT1_GetCapturedPeriod());
+            }            
+        }
+
+        //New NCO Increment Value
+        if (sendDataVtoF)
+        {
+            sendDataVtoF = false;
+            printf("New NCO Increment: 0x%x\n\r", ADCC_GetFilterValue());
+        }
     }
 }
 /**

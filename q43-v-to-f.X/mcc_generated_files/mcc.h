@@ -61,6 +61,7 @@
 #include "nco2.h"
 #include "nco1.h"
 #include "clc1.h"
+#include "uart1.h"
 
 
 
