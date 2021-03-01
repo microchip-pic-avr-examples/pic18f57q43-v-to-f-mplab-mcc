@@ -56,7 +56,7 @@ To use a potentiometer as the voltage source, you will have to build the followi
 
 When completed, it may look something like this:
 
-![Setup Image](./images/setup.JPG)
+![Setup Image](./images/setup.JPG)  
 **Figure 2 - Example Setup. Shown with V/F supplying F/V.**
 
 **Important! The acquisition time of the ADCC has to be adjusted depending on the impedance of the potentiometer!** The worst-case equivalent impedance for the potentiometer is at the 50% position. At this point, the equivalent impedance (of the circuit) is 50% of the potentiometer value.
