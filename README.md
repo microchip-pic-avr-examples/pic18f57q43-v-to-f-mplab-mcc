@@ -51,10 +51,10 @@ The following table summarizes the pin assignments in this code example:
 
 To use a potentiometer as the voltage source, you will have to build the following circuit:
 
-**Figure 1 - Potentiometer Connection Diagram**  
+**Potentiometer Connection Diagram**  
 ![Circuit Diagram](./images/potentiometerCircuit.png)  
 
-**Figure 2 - Example Setup. Shown with V/F supplying F/V.**  
+**Example Setup. Shown with V/F supplying F/V.**  
 ![Setup Image](./images/setup.JPG)  
 
 **Important! The acquisition time of the ADCC has to be adjusted depending on the impedance of the potentiometer!** The worst-case equivalent impedance for the potentiometer is at the 50% position. At this point, the equivalent impedance (of the circuit) is 50% of the potentiometer value.
@@ -63,18 +63,24 @@ To use a potentiometer as the voltage source, you will have to build the followi
 
 *Note: If MPLAB Data Visualizer isn't installed, no icon will appear in the toolbar. (This example uses the plugin version for MPLAB X IDE). MPLAB Data Visualizer can be downloaded using this [link](https://www.microchip.com/en-us/development-tools-tools-and-software/embedded-software-center/mplab-data-visualizer?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_MMTCha_PIC18FQ43&utm_content=pic18q43_v_to_f_github).*
 
-1. Click on the MPLAB Data Visualizer icon in the toolbar.
-2. Select the COM port of the Curiosity Nano (but do not connect to it).
-3. Set the baud rate to 115200, 8-bits, and no parity.
-4. Connect to the Curiosity Nano.
-5. Select it as the terminal source.
+1. Click on the MPLAB Data Visualizer icon in the toolbar.  
+![Step 1](./images/uartStep1.PNG)  
+2. Select the COM port of the Curiosity Nano (but do not connect to it).  
+![Step 2](./images/uartStep2.PNG)  
+3. Set the baud rate to 115200, 8-bits, and no parity.  
+![Step 3](./images/uartStep3.PNG)  
+4. Connect to the Curiosity Nano.  
+![Step 4](./images/uartStep4.PNG)  
+5. Select it as the terminal source.  
+![Step 5](./images/uartStep5.PNG)  
 6. Text should start appearing in the terminal shortly.
+![Example Output](./images/sampleUartOutput.PNG)  
 
 ## Theory of Operation
 
 ### Voltage-to-Frequency (V/F)
 
-**Figure 3 - Block Diagram of the V/F Converter (for reference)**  
+**Block Diagram of the V/F Converter (for reference)**  
 ![V/F Diagram](./images/v-to-f-diagram.png)  
 
 #### Generating the Output
@@ -85,7 +91,7 @@ NCO1 acts as the frequency synthesizer in this example. The NCOs use a 20-bit wo
 
 Doubling the frequency is equivalent to left-shifting the result by 1 bit. However, the ADCC does not have the ability to left-shift results, only right-shift. However, if the ADCC oversamples, and the input remains constant, then the ADCC can effectively left-shift the result. However, the results will fall on a bell-curve due to random noise that is summed together.
 
-**Figure 4 - Error at 4 samples, shown with a 50/50 chance for the last bit to be 1 or 0. (Example only)**  
+**Error at 4 samples, shown with a 50/50 chance for the last bit to be 1 or 0. (Example only)**  
 ![Accumulated Error](./images/bitError.png)  
 
 The ADCC samples 16 times back-to-back, then right-shifts by 2 to reduce noise. This is an effective left-shift of 2 bits. To reduce jitter caused by the slight statistical variations, the computation feature of the ADCC was used to filter the results. Only results with a change in value greater than a set threshold (in this case, +5 or -5 bits) would trigger the DMA to update the reference level (DMA2), then incremented value (DMA3).
@@ -102,12 +108,12 @@ One issue that occurred during development was the output occasionally getting s
 
 One of the advantages of using a CLC (rather than the NCO) to generate the 50% duty cycle is the extra logic options available. The CLC is implemented as a `JK Flip-Flop with Reset`. J and K are held at logic HIGH so the output toggles on every clock cycle. The clock input is from NCO1 (at twice the desired output frequency). The asynchronous reset is connected to TMR6, which functions as a watchdog. TMR6 has been set as an astable timer with a period of 4ms. If a rising edge on the output does not occur within 4ms, TMR6 emits a pulse that clears the flip-flop. At DC, this will only affect an output that is stuck HIGH, as an output at LOW remains LOW after the reset.
 
-**Figure 5 - Implementation of the Duty Cycle Generator (CLC1)**  
+**Implementation of the Duty Cycle Generator (CLC1)**  
 ![CLC1 Implementation](./images/CLC1.png)  
 
 ### Frequency-to-Voltage (F/V)
 
-**Figure 6 - Block Diagram of the F/V Converter**  
+**Block Diagram of the F/V Converter**  
 ![V/F Diagram](./images/f-to-v-diagram.png)  
 
 #### Frequency Counting
@@ -146,7 +152,7 @@ One way to counteract jitter is to increase the input clock frequency of the NCO
 
 One of issue with the F/V converter is the performance at low frequencies. Low-frequencies trigger the same issue as *Jitter in the NCOs*. If a low-frequency signal is passed in, the NCO may rollover unevenly or after multiple seconds. This primarily affects the resolution of the F/V converter at low-frequencies. Figure 5 (below) shows an example of a low-frequency input causing instability in the output.
 
-**Figure 7 - Instability in the F/V Converter**  
+**Instability in the F/V Converter**  
 ![Instability Image](./images/errorExample.PNG)  
 
 ### Analog Limitations
