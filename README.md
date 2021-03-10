@@ -73,7 +73,7 @@ To use a potentiometer as the voltage source, you will have to build the followi
 ![Step 4](./images/uartStep4.PNG)  
 5. Select it as the terminal source.  
 ![Step 5](./images/uartStep5.PNG)  
-6. Text should start appearing in the terminal shortly.
+6. Text should start appearing in the terminal shortly.   
 ![Example Output](./images/sampleUartOutput.PNG)  
 
 ## Theory of Operation
