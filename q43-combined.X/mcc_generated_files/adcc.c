@@ -101,8 +101,8 @@ void ADCC_Initialize(void)
     ADSTAT = 0x00;
     // ADNREF VSS; ADPREF VDD; 
     ADREF = 0x00;
-    // ADACT TMR2; 
-    ADACT = 0x04;
+    // ADACT TMR0; 
+    ADACT = 0x02;
     // ADCS FOSC/2; 
     ADCLK = 0x00;
     // ADGO stop; ADFM right; ADON enabled; ADCS Frc; ADCONT disabled; 

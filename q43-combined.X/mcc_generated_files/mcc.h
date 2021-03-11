@@ -65,6 +65,7 @@
 #include "tmr6.h"
 #include "tmr4.h"
 #include "tmr2.h"
+#include "tmr0.h"
 #include "clc2.h"
 #include "clc1.h"
 #include "uart1.h"
