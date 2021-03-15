@@ -5,7 +5,7 @@
 
 Using the peripherals in the PIC18F57Q43 microcontroller, a voltage-to-frequency (V/F) and frequency-to-voltage (F/V) converter can be created using no external components. Both examples operate core independently on the same microcontroller.
 
-This code example uses the Numerically Controlled Oscillator (NCO), the Signal Measurement Timer (SMT), UART, Direct Memory Access (DMA), Digital-to-Analog Converter (DAC), Analog-to-Digital Converter with Computation (ADCC), TMR2/TMR4/TMR6 and Configurable Logic Cell (CLC) peripherals.
+This code example uses the Numerically Controlled Oscillator (NCO), the Signal Measurement Timer (SMT), UART, Direct Memory Access (DMA), Digital-to-Analog Converter (DAC), Analog-to-Digital Converter with Computation (ADCC), TMR0, TMR2/TMR4/TMR6 and Configurable Logic Cell (CLC) peripherals.
 
 ## Related Documentation
 
@@ -29,7 +29,7 @@ Depending on the example, you will either need:
 - Power Supply or Potentiometer (for using the V/F to generate the waveform)
 - Function Generator (for using the F/V to generate the analog output)
 
-**If the combined example is run, only 1 of these is required, as the output can be looped back into the other.**
+*If the combined example is run, only 1 of these is required, as the output can be looped back into the other.*
 
 For evaluating the performance independently of the microcontroller (*optional*), you will also need:
 
@@ -57,7 +57,7 @@ To use a potentiometer as the voltage source, you will have to build the followi
 **Example Setup. Shown with V/F supplying F/V.**  
 ![Setup Image](./images/setup.JPG)  
 
-**Important! The acquisition time of the ADCC has to be adjusted depending on the impedance of the potentiometer!** The worst-case equivalent impedance for the potentiometer is at the 50% position. At this point, the equivalent impedance (of the circuit) is 50% of the potentiometer value.
+*Important! The acquisition time of the ADCC has to be adjusted depending on the impedance of the potentiometer!* The worst-case equivalent impedance for the potentiometer is at the 50% position. At this point, the equivalent impedance (of the circuit) is 50% of the potentiometer value.
 
 ### Setting MPLAB Data Visualizer
 
@@ -104,7 +104,7 @@ NCO2 runs from the High-Frequency Internal Oscillator (HFINTOSC) running at the 
 
 #### Generating the Output
 
-One issue that occurred during development was the output occasionally getting stuck at 1 when transitioning to a DC output. This is due to the increment in the NCO being set to 0, thus stopping the rollover from completing.
+One issue that occurred during development was the output occasionally getting stuck at 1 when transitioning to a DC output. This is due to the CLC receiving an odd number of pulses, and with an increment of 0, the NCO cannot rollover to generate a new one. 
 
 One of the advantages of using a CLC (rather than the NCO) to generate the 50% duty cycle is the extra logic options available. The CLC is implemented as a `JK Flip-Flop with Reset`. J and K are held at logic HIGH so the output toggles on every clock cycle. The clock input is from NCO1 (at twice the desired output frequency). The asynchronous reset is connected to TMR6, which functions as a watchdog. TMR6 has been set as an astable timer with a period of 4ms. If a rising edge on the output does not occur within 4ms, TMR6 emits a pulse that clears the flip-flop. At DC, this will only affect an output that is stuck HIGH, as an output at LOW remains LOW after the reset.
 
@@ -120,13 +120,13 @@ One of the advantages of using a CLC (rather than the NCO) to generate the 50% d
 
 The TMR4 peripheral is used in this example as a frequency counter. Every rising edge from NCO3 causes it to count by 1. The falling edge from TMR2 resets the TMR4 counter back to 0.
 
-**Note: If more than 255 pulses occur, then TMR4 will rollover to 0x00. (In my limited testing, this occurred around 102kHz). However, this may vary depending on the exact frequency of LFINTOSC.**
+*Note: If more than 255 pulses occur, then TMR4 will rollover to 0x00. (In my limited testing, this occurred around 102kHz). However, this may vary depending on the exact frequency of LFINTOSC.*
 
 #### Clock Division
 
 To count the pulses using an 8-bit timer, the input signal is divided by NCO3. NCO3 effectively divides the signal by 392. This allows the 8-bit timer to capture 255 pulses at ~100kHz.
 
-**Note: Due to fractional errors, it is not exactly 255 at 100kHz.**
+*Note: Due to fractional errors, it is not exactly 255 at 100kHz.*
 
 #### CLC Passthrough
 
@@ -159,7 +159,7 @@ One of issue with the F/V converter is the performance at low frequencies. Low-f
 
 The DAC on the PIC18-Q43 family of microcontrollers has a resolution of 8-bits. While it is possible for the microcontroller to resolve the frequency to a higher resolution with the SMT, this program cannot output more than 8-bits of resolution using the internal DAC.
 
-(It is possible to setup a SPI or I<sup>2</sup>C DAC with more output resolution, however the program will need to be modified.)
+(It is possible to use an external DAC with more output resolution, however the program will need to be modified.)
 
 ## Summary
 This example shows how the rich set of peripherals in the PIC18-Q43 family of microcontrollers can be used to create a frequency-to-voltage and a voltage-to-frequency converter.
