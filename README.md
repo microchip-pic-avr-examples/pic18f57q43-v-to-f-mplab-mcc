@@ -94,19 +94,21 @@ Doubling the frequency is equivalent to left-shifting the result by 1 bit. Howev
 **Error at 4 samples, shown with a 50/50 chance for the last bit to be 1 or 0. (Example only)**  
 ![Accumulated Error](./images/bitError.png)  
 
-The ADCC samples 16 times back-to-back, then right-shifts by 2 to reduce noise. This is an effective left-shift of 2 bits. To reduce jitter caused by the slight statistical variations, the computation feature of the ADCC was used to filter the results. Only results with a change in value greater than a set threshold (in this case, +5 or -5 bits) would trigger the DMA to update the reference level (DMA2), then incremented value (DMA3).
+The ADCC samples 16 times back-to-back, then right-shifts by 2 to reduce noise. This is an effective left-shift of 2 bits. To reduce jitter caused by the slight statistical variations, the computation feature of the ADCC was used to filter the results. Only results with a change in value greater than a set threshold (in this case, +4 or -4 bits) would trigger the DMA to update the reference level (DMA2), then incremented value (DMA3).
 
 #### Creating the Base Frequency
 
 To correctly output 100kHz at the maximum value (0xFFF), NCO1 uses a base clock of 12.8MHz. This frequency can be externally supplied, however NCO2 on the microcontroller can be used to create this frequency.
 
+(Note: NCO2 can be replaced or changed to modify the output frequency.)
+
 NCO2 runs from the High-Frequency Internal Oscillator (HFINTOSC) running at the maximum frequency of 64MHz. Using a slower input clock is possible, however the faster the NCO is clocked, the less jitter there will be in the output frequency.
 
 #### Generating the Output
 
-One issue that occurred during development was the output occasionally getting stuck at 1 when transitioning to a DC output. This is due to the CLC receiving an odd number of pulses, and with an increment of 0, the NCO cannot rollover to generate a new one. 
+One issue that occurred during development was the output occasionally getting stuck at 1 when transitioning to a DC output. This is due to the CLC receiving an odd number of pulses, and with an increment of 0, the NCO cannot rollover to generate a new one.
 
-One of the advantages of using a CLC (rather than the NCO) to generate the 50% duty cycle is the extra logic options available. The CLC is implemented as a `JK Flip-Flop with Reset`. J and K are held at logic HIGH so the output toggles on every clock cycle. The clock input is from NCO1 (at twice the desired output frequency). The asynchronous reset is connected to TMR6, which functions as a watchdog. TMR6 has been set as an astable timer with a period of 4ms. If a rising edge on the output does not occur within 4ms, TMR6 emits a pulse that clears the flip-flop. At DC, this will only affect an output that is stuck HIGH, as an output at LOW remains LOW after the reset.
+One of the advantages of using a CLC (rather than the NCO) to generate the 50% duty cycle is the extra logic options available. The CLC is implemented as a `JK Flip-Flop with Reset`. J and K are held at logic HIGH so the output toggles on every clock cycle. The clock input is from NCO1 (at twice the desired output frequency). The asynchronous reset is connected to TMR6, which functions as a watchdog. TMR6 has been set as an astable timer with a period of 100ms. If a rising edge on the output does not occur within 4ms, TMR6 emits a pulse that clears the flip-flop. At DC, this will only affect an output that is stuck HIGH, as an output at LOW remains LOW after the reset.
 
 **Implementation of the Duty Cycle Generator (CLC1)**  
 ![CLC1 Implementation](./images/CLC1.png)  

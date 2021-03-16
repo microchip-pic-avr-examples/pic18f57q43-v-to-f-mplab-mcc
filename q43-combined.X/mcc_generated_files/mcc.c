@@ -56,16 +56,16 @@ void SYSTEM_Initialize(void)
     NCO3_Initialize();
     DMA2_Initialize();
     ADCC_Initialize();
-    DMA1_Initialize();
     NCO1_Initialize();
+    DMA1_Initialize();
     CLC2_Initialize();
     TMR4_Initialize();
     SMT1_Initialize();
     TMR2_Initialize();
     TMR0_Initialize();
     TMR6_Initialize();
-    NCO2_Initialize();
     CLC1_Initialize();
+    NCO2_Initialize();
     DMA3_Initialize();
     DAC1_Initialize();
     UART1_Initialize();

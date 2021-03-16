@@ -63,12 +63,12 @@ void (*ADCC_ADTI_InterruptHandler)(void);
 void ADCC_Initialize(void)
 {
     // set the ADCC to the options selected in the User Interface
-    // ADLTH 251; 
-    ADLTHL = 0xFB;
+    // ADLTH 252; 
+    ADLTHL = 0xFC;
     // ADLTH 255; 
     ADLTHH = 0xFF;
-    // ADUTH 5; 
-    ADUTHL = 0x05;
+    // ADUTH 4; 
+    ADUTHL = 0x04;
     // ADUTH 0; 
     ADUTHH = 0x00;
     // ADSTPT 0; 
