@@ -118,7 +118,7 @@ TMR6 is used to help control the output waveform. It can be used in 2 ways - it 
 
 The benefit of the low-frequency output is that a broken connection from the V/F converter can be detected, since the output is always oscillating.
 
-The downside of this approach is that the F/V converter counts the low-frequency pulses, producing a non-zero output.
+The downside of this approach is that the F/V converter counts the low-frequency pulses, producing the occasional glitch. (At 6 Hz, a ***small*** (DAC value of 1) glitch would occur every 65s).
 
 The CLC setup in this example is shown below.
 
@@ -132,7 +132,9 @@ The CLC setup in this example is shown below.
 
 The benefit of the DC output is that the F/V converter considers this to be a true-zero output, as there are no pulses to count. TMR6 is used in this mode to ensure that the CLC is at a logic LOW - if an odd number of pulses are latched when the NCO is set to 0, then the CLC will be stuck HIGH.
 
-The downside of this approach is that an open wire between the two cannot be detected by pulse detection. The setup of the CLC is shown below.
+The downside of this approach is that an open wire between the two cannot be detected by pulse detection. The pulse detector is implemented by the CPU, which polls the SMT once per second when it goes to print the debug values.
+
+The setup of the CLC is shown below.
 
 **Alternative Implementation of the Duty Cycle Generator (CLC1)**  
 ![CLC1 Implementation](./images/CLC1_alt.png)  
