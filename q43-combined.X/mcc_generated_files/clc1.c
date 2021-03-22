@@ -71,12 +71,12 @@ void CLC1_Initialize(void)
     CLCnSEL2 = 0x2A;
     // D4S NCO1_OUT; 
     CLCnSEL3 = 0x2A;
-    // G1D3N disabled; G1D2N disabled; G1D4N disabled; G1D1T enabled; G1D3T disabled; G1D2T disabled; G1D4T disabled; G1D1N disabled; 
-    CLCnGLS0 = 0x02;
+    // G1D3N disabled; G1D2N disabled; G1D4N disabled; G1D1T enabled; G1D3T disabled; G1D2T enabled; G1D4T disabled; G1D1N disabled; 
+    CLCnGLS0 = 0x0A;
     // G2D2N disabled; G2D1N disabled; G2D4N disabled; G2D3N disabled; G2D2T disabled; G2D1T disabled; G2D4T disabled; G2D3T disabled; 
     CLCnGLS1 = 0x00;
-    // G3D1N disabled; G3D2N disabled; G3D3N disabled; G3D4N disabled; G3D1T disabled; G3D2T enabled; G3D3T disabled; G3D4T disabled; 
-    CLCnGLS2 = 0x08;
+    // G3D1N disabled; G3D2N disabled; G3D3N disabled; G3D4N disabled; G3D1T disabled; G3D2T disabled; G3D3T disabled; G3D4T disabled; 
+    CLCnGLS2 = 0x00;
     // G4D1N disabled; G4D2N disabled; G4D3N disabled; G4D4N disabled; G4D1T disabled; G4D2T disabled; G4D3T disabled; G4D4N disabled; 
     CLCnGLS3 = 0x00;
     // CLC1OUT 0; 

@@ -58,8 +58,8 @@ void SYSTEM_Initialize(void)
     ADCC_Initialize();
     NCO1_Initialize();
     DMA1_Initialize();
-    CLC2_Initialize();
     TMR4_Initialize();
+    CLC2_Initialize();
     SMT1_Initialize();
     TMR2_Initialize();
     TMR0_Initialize();

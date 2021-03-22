@@ -66,14 +66,14 @@ void TMR6_Initialize(void)
     // T6CS LFINTOSC; 
     T6CLKCON = 0x04;
 
-    // T6PSYNC Not Synchronized; T6MODE Resets at rising TMR6_ers; T6CKPOL Rising Edge; T6CKSYNC Not Synchronized; 
-    T6HLT = 0x04;
+    // T6PSYNC Not Synchronized; T6MODE Resets at rising/falling TMR6_ers; T6CKPOL Rising Edge; T6CKSYNC Not Synchronized; 
+    T6HLT = 0x03;
 
     // T6RSEL CLC1_out; 
     T6RST = 0x12;
 
-    // PR6 193; 
-    T6PR = 0xC1;
+    // PR6 160; 
+    T6PR = 0xA0;
 
     // TMR6 0; 
     T6TMR = 0x00;

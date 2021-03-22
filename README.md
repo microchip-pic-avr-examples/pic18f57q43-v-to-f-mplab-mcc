@@ -108,10 +108,32 @@ NCO2 runs from the High-Frequency Internal Oscillator (HFINTOSC) running at the 
 
 One issue that occurred during development was the output occasionally getting stuck at 1 when transitioning to a DC output. This is due to the CLC receiving an odd number of pulses, and with an increment of 0, the NCO cannot rollover to generate a new one.
 
-One of the advantages of using a CLC (rather than the NCO) to generate the 50% duty cycle is the extra logic options available. The CLC is implemented as a `JK Flip-Flop with Reset`. J and K are held at logic HIGH so the output toggles on every clock cycle. The clock input is from NCO1 (at twice the desired output frequency). The asynchronous reset is connected to TMR6, which functions as a watchdog. TMR6 has been set as an astable timer with a period of 100ms. If a rising edge on the output does not occur within 4ms, TMR6 emits a pulse that clears the flip-flop. At DC, this will only affect an output that is stuck HIGH, as an output at LOW remains LOW after the reset.
+One of the advantages of using a CLC (rather than the NCO) to generate the 50% duty cycle is the extra logic options available. The CLC is implemented as a `JK Flip-Flop with Reset`. J and K are held at logic HIGH so the output toggles on every clock cycle. The clock input is from NCO1 (at twice the desired output frequency).
 
-**Implementation of the Duty Cycle Generator (CLC1)**  
+TMR6 is used to help control the output waveform. It can be used in 2 ways - it can either be used to produce a DC output or it can be used to produce a low-frequency (6 Hz) output.
+
+#### Low-Frequency Output (6 Hz)
+
+The benefit of the low-frequency output is that a broken connection from the V/F converter can be detected, since the output is always oscillating.
+
+The downside of this approach is that the F/V converter counts the low-frequency pulses, producing a non-zero output.
+
+The CLC setup in this example is shown below.
+
+*Note: This is the default configuration of this example.*
+
+**Implementation of the Duty Cycle Generator (CLC1)**
+
 ![CLC1 Implementation](./images/CLC1.png)  
+
+#### DC Output (0 Hz)
+
+The benefit of the DC output is that the F/V converter considers this to be a true-zero output, as there are no pulses to count. TMR6 is used in this mode to ensure that the CLC is at a logic LOW - if an odd number of pulses are latched when the NCO is set to 0, then the CLC will be stuck HIGH.
+
+The downside of this approach is that an open wire between the two cannot be detected by pulse detection. The setup of the CLC is shown below.
+
+**Alternative Implementation of the Duty Cycle Generator (CLC1)**  
+![CLC1 Implementation](./images/CLC1_alt.png)  
 
 ### Frequency-to-Voltage (F/V)
 
