@@ -96,6 +96,8 @@ Doubling the frequency is equivalent to left-shifting the result by 1 bit. Howev
 
 The ADCC samples 16 times back-to-back, then right-shifts by 2 to reduce noise. This is an effective left-shift of 2 bits. To reduce jitter caused by the slight statistical variations, the computation feature of the ADCC was used to filter the results. Only results with a change in value greater than a set threshold (in this case, +4 or -4 bits) would trigger the DMA to update the reference level (DMA2), then incremented value (DMA3).
 
+*Note: Thresholds and AQ time may need to be adjusted depending on the noise level of the input signal.*
+
 #### Creating the Base Frequency
 
 To correctly output 100kHz at the maximum value (0xFFF), NCO1 uses a base clock of 12.8MHz. This frequency can be externally supplied, however NCO2 on the microcontroller can be used to create this frequency.

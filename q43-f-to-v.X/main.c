@@ -138,10 +138,14 @@ void main(void)
                 uint8_t freq = fastDivision24(SMT1_GetCapturedPeriod(), 1000);
                 printf("Measured Input Frequency: %ukHz\n\r", freq);
             }
-            else
+            else if (SMT1_GetCapturedPeriod() > 5)
             {
                 printf("Measured Input Frequency: %uHz\n\r", SMT1_GetCapturedPeriod());
-            }            
+            }
+            else
+            {
+                printf("Open Wire Detected.\n\r");
+            }
         }   
     }
 }
