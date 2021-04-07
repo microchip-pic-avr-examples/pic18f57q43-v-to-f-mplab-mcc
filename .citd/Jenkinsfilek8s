@@ -1,7 +1,8 @@
+// Jenkinsfile v2.0.0
 pipeline {
     agent {
         kubernetes {
-            label 'pic18f57q43-v-to-f-mplab-mcc'
+
 			defaultContainer 'xc8-mplabx'
             yamlFile '.citd/cloudprovider.yml'
         }
