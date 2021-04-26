@@ -168,7 +168,7 @@ Originally, the SMT was used as the measurement timer in this example, however i
 
 To transfer the new DAC value into the DAC, DMA1 is triggered by the rising edge of TMR2 to move the TMR4 count to the DAC Data Register.
 
-## Jitter, Error, and Limitations
+## Errors, Limitations, and Improvements
 
 ### Jitter in the NCOs
 
@@ -188,6 +188,12 @@ One of issue with the F/V converter is the performance at low frequencies. Low-f
 The DAC on the PIC18-Q43 family of microcontrollers has a resolution of 8-bits. While it is possible for the microcontroller to resolve the frequency to a higher resolution with the SMT, this program cannot output more than 8-bits of resolution using the internal DAC.
 
 (It is possible to use an external DAC with more output resolution, however the program will need to be modified.)
+
+### Hybrid F/V Converter
+
+As an alternative to the fully hardware-based F/V implementation, the SMT can be used to count the pulses from the input and then scale the pulse count in software.
+
+This approach requires the CPU to periodically read the pulse count from the SMT, scale the value, and update the DAC. The benefit of this approach is that the converter no longer vulnerable to carryover errors from the NCO's division or to frequency rollover, should the input exceed 100 kHz.
 
 ## Summary
 This example shows how the rich set of peripherals in the PIC18-Q43 family of microcontrollers can be used to create a frequency-to-voltage and a voltage-to-frequency converter.

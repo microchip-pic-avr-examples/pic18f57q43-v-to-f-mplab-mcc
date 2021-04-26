@@ -4,7 +4,7 @@
     "content": {
         "metaDataVersion": "1.1.0",
         "name": "com.microchip.mcu8.mplabx.project.pic18f57q43-v-to-f-mplab-mcc",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "displayName": "V/F and F/V Converter with PIC18F57Q43",
         "projectName": "pic18f57q43-v-to-f-mplab-mcc",
         "shortDescription": "Convert V/F and F/V using the peripherals in PIC18F57Q43",
