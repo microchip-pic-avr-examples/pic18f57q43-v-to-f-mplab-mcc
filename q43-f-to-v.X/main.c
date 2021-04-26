@@ -43,52 +43,13 @@
 
 #include "mcc_generated_files/mcc.h"
 
+#include <math.h>
+
 volatile static bool sendDataFtoV = false;
 
 void __OnTMR2Overflow(void)
 {
     sendDataFtoV = true;
-}
-
-//Using Fixed Point Numbers, set the DAC's output from SMT1's value
-//Not currently used in the example, but it showcases another way.
-void setDACFromFrequencyFixedPoint(void)
-{
-    //Frequency Range: 100kHz to DC
-    //DAC is 8-bits
-    //Resolution is 390.625Hz per bit (100kHz / 256)
-    
-    const uint8_t fraction = 0b10100000;
-    
-    uint16_t wholeFreq = 390;
-    uint8_t fractFreq = fraction; //Binary representation of 0.625 
-    
-    uint8_t output = 0;
-    uint24_t value = SMT1_GetCapturedPeriod();
-    
-    while (value > wholeFreq)
-    {
-        //Subtract the whole number frequency
-        value -= wholeFreq;
-        
-        //IF not at max output, then increment the output
-        if (output != 0xFF)
-            output++;
-        
-        //Balance the decimal
-        if ((fractFreq & 0x80) != 0x00)
-        {
-            //If there is a remainder...
-            fractFreq = (fractFreq << 1) | 0b1;
-            value--;
-        }
-        else
-        {
-            fractFreq = fractFreq << 1;
-        }
-    }
-    
-    DAC1_SetOutput(output);
 }
 
 //Fast division of a 24-bit number by a 16-bit number, with no remainder returned.
@@ -130,8 +91,22 @@ void main(void)
         if (sendDataFtoV)
         {
             sendDataFtoV = false;
-            //setDACFromFrequencyFixedPoint();
-                        
+            
+            //For a software based approach, use this! 
+            //DMA should be disabled before use.
+            
+            /*uint16_t DACvalue = floor(SMT1_GetCapturedPeriod() / 392.157);
+            if (DACvalue > UINT8_MAX)
+            {
+                DAC1_SetOutput(UINT8_MAX);
+            }
+            else
+            {
+                DAC1_SetOutput(DACvalue);
+            }*/
+            
+            //End of Software Approach
+            
             if (SMT1_GetCapturedPeriod() > UINT16_MAX)
             {
                 //Exceeds the size that printf can handle - show in kHz instead.

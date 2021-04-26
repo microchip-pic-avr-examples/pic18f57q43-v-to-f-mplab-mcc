@@ -101,6 +101,21 @@ void main(void)
         {
             sendDataFtoV = false;
             
+            //For a software based F/V converter, use this! 
+            //DMA should be disabled before use.
+            
+            /*uint16_t DACvalue = floor(SMT1_GetCapturedPeriod() / 392.157);
+            if (DACvalue > UINT8_MAX)
+            {
+                DAC1_SetOutput(UINT8_MAX);
+            }
+            else
+            {
+                DAC1_SetOutput(DACvalue);
+            }*/
+            
+            //End of Software Approach
+            
             if (SMT1_GetCapturedPeriod() > UINT16_MAX)
             {
                 //Exceeds the size that printf can handle - show in kHz instead.
